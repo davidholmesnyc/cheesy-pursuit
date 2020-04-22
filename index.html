@@ -58,6 +58,15 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
 
+class Map {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+
+
+}
+
 var GRID_SIZE = 40
 
 
@@ -85,6 +94,10 @@ var GRID = [
 
 ]
 
+function shuffle(array) {
+  array.sort(() => Math.random() - 0.5);
+}
+
 
 matrix[0] = MOUSE
 
@@ -108,10 +121,21 @@ function getIndex(type){
 
 var CAT_STORE = [CHEESE]
 var LAST_CAT = -1
+var CAT_LOCATIONS = generateRandomCatDirection()
+function generateRandomCatDirection(){
+	var rows = Array.from(Array(GRID.length).keys())
+	var columns = Array.from(Array(GRID[0].length).keys()) 
+	shuffle(rows)
+	shuffle(columns)
+	return {
+		rows:rows,
+		columns:columns
+	} 
+}
 function randomDirection(limit){
 	var r = random(limit)
 	console.log("r",r)
-	if(LAST_CAT == r ){
+	if(LAST_CAT === r ){
 		LAST_CAT = r 
 		randomDirection(limit)
 			
@@ -185,6 +209,10 @@ function sendCat(direction){
 	// if(direction === "left" or  direction === "right"){
 	// 	var limit = 7
 	// }
+	if(typeof GRID[row] === 'undefined' || typeof GRID[row][column] === 'undefined' ){
+		sendCat(direction)
+	}
+
 	GRID[row][column] = CAT
 	buildBox()
 	moveCat(direction,limit)
@@ -196,8 +224,9 @@ function checkIfgameOver(){
 }
 function gameOver(){
 	//alert("Game Over")
-	newGame()
+	//newGame()
 }
+
 function random(max){
 	return Math.round(Math.random() * max)
 }
@@ -271,10 +300,6 @@ function buildBox(){
 		html += "</div>"
 		
 		
-		
-		
-		
-
 	}
 	$("#pane").html(html)
 	youWon()
