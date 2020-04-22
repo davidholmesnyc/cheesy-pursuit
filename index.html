@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Mouse Cat Game</title>
+	<style>
+		#pane {
+		  width: 300px;
+		  height: 200px;
+		  margin-top: 5px;
+		  /*border: 2px solid red;*/
+		}
+
+		#mouse {
+		  min-width: 32px;
+		  min-height: 32px;
+		  background-color: black;
+		  border: 2px solid red;
+		}
+		.box{
+			position:relative;
+			border:1px solid black;
+			min-height:32px;
+			min-width:32px;
+			display:inline-block;
+			margin:0px;
+			padding:0px;
+			background-color:silver;;
+			font-size: 0;
+			margin-top:-5px;
+			border: 0.3px solid #909090;
+		}
+
+		#score{
+			font-size:16px;
+		}
+
+		.box img{
+
+			    position: absolute;
+			    left: 25%;
+			    top: 25%;
+		}
+	</style>
+
+</head>
+ 
+
+<body>
+
+<div id="score">0</div>
+
+<div id="pane">
+
+
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+
+var GRID_SIZE = 40
+
+
+var matrix = new Array(GRID_SIZE).fill(3)
+var mouse = ""
+var SCORE = 0
+const UP_DOWN_AMOUNT = 8
+const LEFT_RIGHT_AMOUNT = 1
+// mouse default position
+var MOUSE = 1 
+var CHEESE = 3
+var CAT = 2
+var EMPTY = 0
+var _DIRECTIONS = ["down","up","left","right"]
+function newGame(){
+	location.reload();
+}
+var GRID = [
+	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+	[CHEESE,CHEESE,CHEESE,MOUSE,CHEESE,CHEESE,CHEESE],
+	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+
+
+]
+
+
+matrix[0] = MOUSE
+
+
+function getIndex(type){
+	var row = 0
+	var column = 0 
+	for(let x in GRID){
+		row = x 
+		for(let b in GRID[x]){
+			if( GRID[x][b] === type){
+				column = b
+				return [parseInt(row),parseInt(column)]
+			} 
+			
+		}
+		
+	}
+	return false
+}
+
+var CAT_STORE = [CHEESE]
+var LAST_CAT = -1
+function randomDirection(limit){
+	var r = random(limit)
+	console.log("r",r)
+	if(LAST_CAT == r ){
+		LAST_CAT = r 
+		randomDirection(limit)
+			
+
+	}else{
+		return r
+	}
+	
+}
+function moveMouse(direction,itemType){
+	var current_mouse_position_row = getIndex(itemType)[0]
+	var current_mouse_position_column = getIndex(itemType)[1]
+
+
+	var nextPosition = {
+		'down':[( current_mouse_position_row + 1), current_mouse_position_column],
+		'up':[current_mouse_position_row - 1,current_mouse_position_column],
+		'left':[current_mouse_position_row,current_mouse_position_column + 1],
+		'right':[current_mouse_position_row,current_mouse_position_column - 1],
+		"topright":[current_mouse_position_row,current_mouse_position_column - 1]
+	}
+
+	if(typeof GRID[nextPosition[direction][0]] === 'undefined' || typeof GRID[nextPosition[direction][0]][nextPosition[direction][1]] === 'undefined' ){
+		return false
+	}
+
+	checkIfgameOver()
+	if(itemType === MOUSE){
+		addToScore([ nextPosition[direction][0],nextPosition[direction][1] ])
+		if(GRID[nextPosition[direction][0]][nextPosition[direction][1]] === CAT){
+			gameOver()
+		}
+		GRID[current_mouse_position_row][current_mouse_position_column] = 0	
+	}
+
+	if(itemType === CAT){
+		GRID[current_mouse_position_row][current_mouse_position_column] = CAT_STORE[0]
+		CAT_STORE[0] = GRID[nextPosition[direction][0]][nextPosition[direction][1]]
+		
+	}
+	GRID[nextPosition[direction][0]][nextPosition[direction][1]] = itemType
+
+	buildBox()
+	
+}
+
+function sendCat(direction){
+
+	if(direction === "up"){
+		var limit = 5
+		var row = 4
+		var column = randomDirection(GRID[4].length)
+	}
+	if(direction === "down"){
+		var limit = 5
+		var row = 0
+		var column = randomDirection(GRID[0].length)
+	}
+	if(direction === "left"){
+		var limit = 7
+		var row = randomDirection(4)
+		var column = 0
+	}
+	if(direction === "right"){
+		var limit = 7
+		var row = randomDirection(4)
+		var column = 6
+	}
+
+
+	// if(direction === "left" or  direction === "right"){
+	// 	var limit = 7
+	// }
+	GRID[row][column] = CAT
+	buildBox()
+	moveCat(direction,limit)
+}
+function checkIfgameOver(){
+	if(getIndex(MOUSE) === false){
+		gameOver()
+	}
+}
+function gameOver(){
+	//alert("Game Over")
+	newGame()
+}
+function random(max){
+	return Math.round(Math.random() * max)
+}
+function moveCat(direction,limit){
+	var i = 0
+	clearInterval(catmove)
+	var catmove = setInterval(function(){
+		moveMouse(direction,CAT)
+		i = i + 1
+		if(i == limit){
+			clearInterval(catmove)
+			var current_mouse_position_row = getIndex(CAT)[0]
+			var current_mouse_position_column = getIndex(CAT)[1]
+			GRID[current_mouse_position_row][current_mouse_position_column] = CAT_STORE[0]
+			buildBox()
+			sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
+
+			
+		}
+	},500)
+	// moveMouse(direction,CAT)
+}
+
+function addToScore(nextPosition){
+	// matrix[position] = 0
+	console.log("nextPosition",nextPosition)
+	if(GRID[nextPosition[0]][nextPosition[1]] === CHEESE){
+		SCORE = SCORE + 1 
+		$("#score").html(SCORE)
+	}	
+	
+	
+}
+
+function youWon(){
+
+	console.log("cheese left",getIndex(CHEESE))
+	if(getIndex(CHEESE) === false){
+		//alert("you won")
+	}
+}
+const box = (mouse) =>{ return `<span class='box'>${mouse}</span>` } 
+
+function buildBox(){
+
+	var html = ""
+	var row = ""
+	for (let x in GRID){
+		html += "<div style='display:block'>"
+
+		for(let b in GRID[x]){
+			if (GRID[x][b] === MOUSE){
+				var mouse = "<img src='mouse.png'width='16' height='16'/>"
+			}
+
+			if (GRID[x][b] === EMPTY){
+				var mouse = ''
+			}
+
+			if (GRID[x][b] === CHEESE){
+				var mouse = "<img src='cheese.png' width='16' height='16'/>"
+			}
+
+			if (GRID[x][b] === CAT){
+				var mouse = "<img src='cat.png' width='16' height='16'/>"
+			}
+
+			html += box(mouse)
+		}
+
+		html += "</div>"
+		
+		
+		
+		
+		
+
+	}
+	$("#pane").html(html)
+	youWon()
+}
+buildBox()
+sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '38') {
+       moveMouse("up",MOUSE)
+    }
+    else if (e.keyCode == '40') {
+       moveMouse("down",MOUSE)
+    }
+    else if (e.keyCode == '37') {
+       moveMouse("right",MOUSE)
+    }
+    else if (e.keyCode == '39') {
+      moveMouse("left",MOUSE)
+    }
+    
+
+}
+
+
+
+</script>
+	
+</body>
+</html>
