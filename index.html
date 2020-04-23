@@ -203,12 +203,13 @@ class Game {
   	if(_LIVES < 0){
   		$(".score").html("gameover")
   		alert("Game Over")
+  		this.stopGame()
   		return
   	}
   	alert("Try again! You have more lives!")
   	$(".livescounter").html(_LIVES)
   	//alert("gameover")
-  	this.stopGame()
+  	
   }
 
   displayBoxItem(item){ 
