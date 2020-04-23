@@ -140,7 +140,9 @@ class Game {
   youWon(){
   	console.log("CHEESE",this.getIndex(CHEESE))
   	if(!this.getIndex(CHEESE)){
+  		this.stopGame()
   		alert("Winner Winner Chicken Dinner!")
+
   	}
   }
   bindKeys(){
@@ -198,11 +200,11 @@ class Game {
   displayBoxItem(item){ 
   	return `<span class='box'>${item}</span>` 
   }
-  youWon(){
-  	if(!this.getIndex(CHEESE)){
-  		alert("you won")
-  	}
-  }
+  // youWon(){
+  // 	if(!this.getIndex(CHEESE)){
+  // 		alert("you won")
+  // 	}
+  // }
 
   stopGame(){
   		clearInterval(this.timer)
