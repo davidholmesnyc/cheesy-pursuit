@@ -130,7 +130,15 @@ class Game {
 
   start(){
   	this.buildBox()
-  	this.bindKeys()
+		this.bindKeys(this.startOnKeyPresss)
+  }
+
+  startOnKeyPresss(self,e){
+  	const arrow_keys = [38, 40, 37,39];
+  	if (arrow_keys.includes(e.keyCode) && self._started == 0  ){
+  		self.sendCat(false)
+  		self._started = 1 
+  	}
   }
 
   // set started(value) {
@@ -157,20 +165,14 @@ class Game {
 
   	game.start()
   }
-  bindKeys(){
+  bindKeys(callback){
 
   	document.onkeydown = checkKey;
   	var self = this
   	function checkKey(e) {
 
   	    e = e || window.event;
-  	    const arrow_keys = [38, 40, 37,39];
-  	     	console.log("true_out")
-  	    if (arrow_keys.includes(e.keyCode) && self._started == 0  ){
-  	    	self.sendCat(false)
-  	    	self._started = 1 
-  	    	console.log("true_in")
-  	    }
+  	   	callback(self,e)
 
   	
 
@@ -197,8 +199,8 @@ class Game {
  
 
   gameover(){
-  	_LIVES = _LIVES -1 
-  	if(_LIVES == -1){
+  	_LIVES = _LIVES - 1 
+  	if(_LIVES < 0){
   		$(".score").html("gameover")
   		alert("Game Over")
   		return
