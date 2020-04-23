@@ -431,7 +431,7 @@ class Game {
 
 			if(i == limit){
   			console.log("reached limit")
-  			clearInterval(this.timer)
+  			clearInterval(self.timer)
   			var row = self.getIndex(CAT)[0]
   			var column = self.getIndex(CAT)[1]
   			GRID[row][column] = CAT_STORE[0]
