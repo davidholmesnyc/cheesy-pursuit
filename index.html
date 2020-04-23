@@ -101,6 +101,8 @@
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 	]
 
+	var GRID_OG = GRID
+
 var CAT_STORE = [CHEESE]
 
 
@@ -123,7 +125,7 @@ class Game {
   	} 
   	this._started = 0
   	this.cats = 3
-  	this.score = 0
+  	this.score = options.score || 0
   }
 
   start(){
@@ -142,8 +144,18 @@ class Game {
   	if(!this.getIndex(CHEESE)){
   		this.stopGame()
   		alert("Winner Winner Chicken Dinner!")
-
+  		// this.nextLevel()
   	}
+  }
+
+  nextLevel(){
+  	var t = new Game({
+  		id: this.id,
+  		speed:(this.speed - 100),
+  		score:this.score
+  	})
+
+  	game.start()
   }
   bindKeys(){
 
@@ -450,6 +462,7 @@ class Game {
 
 var game = new Game({
 	"id":"#pane",
+	"score":""
 })
 
 game.start()
