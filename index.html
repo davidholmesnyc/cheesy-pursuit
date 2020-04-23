@@ -50,76 +50,338 @@
 
 <div id="score">0</div>
 
-<div id="pane">
-
-
-
-</div>
+<div id="pane"></div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
+	var mouse = ""
+	var SCORE = 0
+	const UP_DOWN_AMOUNT = 8
+	const LEFT_RIGHT_AMOUNT = 1
+	// mouse default position
+	const MOUSE = 1 
+	const CHEESE = 3
+	const CAT = 2
+	const EMPTY = 0
+	const _CHEESE_ITEM_IMG = "<img src='cheese.png' width='16' height='16'/>"
+	const _MOUSE_ITEM_IMG = "<img src='mouse.png'width='16' height='16'/>"
+	const _CAT_ITEM_IMG = "<img src='cat.png' width='16' height='16'/>"
+	var _DIRECTIONS = ["down","up","left","right"]
+	function newGame(){
+		location.reload();
+	}
+	var GRID = [
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,MOUSE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+	]
 
-class Map {
-  constructor(height, width) {
-    this.height = height;
-    this.width = width;
+var CAT_STORE = [CHEESE]
+
+
+class Game {
+  constructor(options) {
+  	this._id = options.id
+  	this.speed = options.speed || 1000
+  }
+
+  start(){
+  	this.buildBox()
+  	// this.gameover()
+  	this.sendCat("right",7)
+  }
+
+  gameoverAlert(){
+
+  }
+
+  gameover(){
+  	console.log("gameover")
+  }
+  // gameover(){
+  // 	var self = this
+  // 	var timer = setInterval(function(){
+  // 		var mouseLocation = self.getIndex(MOUSE)
+  // 		if(!mouseLocation){
+  // 				//alert("Game Over")
+  // 				console.log("game over")
+  // 				clearInterval(timer)
+  // 		}
+  // 	},100)
+  // 	console.log("lost, try again")
+  // }
+  
+  displayBoxItem(item){ 
+  	return `<span class='box'>${item}</span>` 
+  }
+  youWon(){
+  	if(this.getIndex(CHEESE) === false){
+  		//alert("you won")
+  	}
+  }
+	
+	getIndex(type){
+  	var row = 0
+  	var column = 0 
+  	for(let x in GRID){
+  		row = x 
+  		for(let b in GRID[x]){
+  			if( GRID[x][b] === type){
+  				column = b
+  				return [parseInt(row),parseInt(column)]
+  			} 
+  			
+  		}
+  	}
+  	return false
+  }
+	
+	buildBox(){
+		var html = ""
+  	var row = ""
+  	for (let row in GRID){
+  		html += "<div style='display:block'>"
+			for(let column in GRID[row]){
+				switch(GRID[row][column]) {
+  			  case MOUSE:
+  			    var boxItem = _MOUSE_ITEM_IMG
+  			    break;
+  			  case CHEESE:
+  			    var boxItem = _CHEESE_ITEM_IMG
+  			    break;
+  			  case CAT:
+  			    var boxItem = _CAT_ITEM_IMG
+  			    break;
+  			  default:
+  			    var boxItem = ''
+  			}
+				html += this.displayBoxItem(boxItem)
+  		}
+			html += "</div>"
+  	}
+  	$(this._id).html(html)
+  	this.youWon()
   }
 
 
+
+  avaiablegridBox(row,column){
+  	if
+  	(
+  		typeof GRID[row] === 'undefined'  || 
+  		typeof GRID[row][column] === 'undefined' 
+  	)
+  	{
+  		return false
+  	}
+  	return true
+  }
+
+  // progress(){
+  // 	$("#score").html()
+  // }
+
+  addScoreOrGameover(nextPosition){
+		if(GRID[nextPosition[0]][nextPosition[1]] === CHEESE){
+  		SCORE = SCORE + 1 
+  		$("#score").html(SCORE)
+  	}
+  	if(GRID[nextPosition[0]][nextPosition[1]] === CAT){
+  		this.gameover()
+  	}
+  }
+  checkForCat(nextPosition){
+  	if(GRID[nextPosition[0]][nextPosition[1]] === this.getIndex(CAT)){
+  		gameOver()
+  	}else{
+  		return true
+  	}
+  }
+  // MOVE FUNCTIONS 
+  move(itemType,direction){
+  	var row = this.getIndex(itemType)[0]
+  	var column = this.getIndex(itemType)[1]
+		var nextPosition = {
+  		'down':[( row + 1), column],
+  		'up':[row - 1,column],
+  		'left':[row,column + 1],
+  		'right':[row,column - 1],
+  		"topright":[row,column - 1]
+  	}
+		var [newRow,newColumn] = [nextPosition[direction][0],nextPosition[direction][1]]
+  	
+  	// if they don't exist on the grid then don't make any changes 
+ 		if (!this.avaiablegridBox(newRow,newColumn)) return 
+		
+		if(itemType === MOUSE){
+  		// add score if cheese
+  		this.addScoreOrGameover(nextPosition[direction])
+  		// if my next move has a cat then it's game over
+  		
+  		// you got the cheese so now empty  
+  		GRID[row][column] = EMPTY	
+  	}
+
+  	if(itemType === CAT){
+  		GRID[row][column] = CAT_STORE[0]
+  		CAT_STORE[0] = GRID[newRow][newColumn]
+  		
+  	}
+
+  	// set the next postion
+  	GRID[newRow][newColumn] = itemType
+  	// rebuild box
+  	this.buildBox()
+
+  	return [newRow,newColumn]
+  }
+
+  addCatToGrid(row,column){
+  	// cats are already on the board
+  	if(this.getIndex(CAT)) return 
+  	
+
+  	GRID[row][column] = CAT
+  	this.buildBox()
+  }
+
+  sendCat(direction){
+
+  	if(direction === "up"){
+  		var limit = 5
+  		var row = 4
+  		var column = 1 || randomDirection(GRID[4].length)
+  	}
+  	if(direction === "down"){
+  		var limit = 5
+  		var row = 0
+  		var column = 0 || randomDirection(GRID[0].length)
+  	}
+  	if(direction === "left"){
+  		var limit = 7
+  		var row = 3 || randomDirection(4)
+  		var column = 0
+  	}
+  	if(direction === "right"){
+  		var limit = 7
+  		var row = 2 || randomDirection(4)
+  		var column = 6
+  	}
+
+  	this.addCatToGrid(row,column)
+  	this.Cat_AI(direction,limit)
+  }
+
+
+  Cat_AI(direction,limit){
+  	var i = 0
+  	var self = this
+
+  	// before we can move lets see if we need to add cat to grid 
+  	self.addCatToGrid(0,0)
+		
+		function timer_function(){
+			
+			console.log("interval_running")
+  		self.move(CAT,direction)
+  		var catLocation = self.getIndex(CAT)
+  		// console.log("catlocation",catlocation)
+
+  		self.addScoreOrGameover(catLocation)
+  		i = i + 1
+
+			if(i == limit){
+  			console.log("reached limit")
+  			clearInterval(timer)
+  			var row = self.getIndex(CAT)[0]
+  			var column = self.getIndex(CAT)[1]
+  			GRID[row][column] = CAT_STORE[0]
+  			self.buildBox()
+  		}
+  			// sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
+		}
+		var timer = setInterval(timer_function,this.speed)
+  }
+ 
+
 }
 
-var GRID_SIZE = 40
+// class Move extends Game {
+	
+// 	// constructor() {
+// 	// 	super({
+// 	// 		"id":"test"
+// 	// 	})
+// 	// }
+
+//   test(){
+//   		console.log(this.id)
+//   }
+
+// }
+
+// var move = new Move()
+// move.test()
+
+var game = new Game({
+	"id":"#pane",
+
+})
+
+game.start()
 
 
-var matrix = new Array(GRID_SIZE).fill(3)
-var mouse = ""
-var SCORE = 0
-const UP_DOWN_AMOUNT = 8
-const LEFT_RIGHT_AMOUNT = 1
-// mouse default position
-var MOUSE = 1 
-var CHEESE = 3
-var CAT = 2
-var EMPTY = 0
-var _DIRECTIONS = ["down","up","left","right"]
-function newGame(){
-	location.reload();
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '38') {
+     	game.move(MOUSE,"up")
+    }
+    else if (e.keyCode == '40') {
+    	game.move(MOUSE,"down")
+    }
+    else if (e.keyCode == '37') {
+      game.move(MOUSE,"right")
+    }
+    else if (e.keyCode == '39') {
+      game.move(MOUSE,"left")
+    }
+    
+
 }
-var GRID = [
-	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-	[CHEESE,CHEESE,CHEESE,MOUSE,CHEESE,CHEESE,CHEESE],
-	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-	[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 
 
-]
 
 function shuffle(array) {
   array.sort(() => Math.random() - 0.5);
 }
 
 
-matrix[0] = MOUSE
+// matrix[0] = MOUSE
 
 
-function getIndex(type){
-	var row = 0
-	var column = 0 
-	for(let x in GRID){
-		row = x 
-		for(let b in GRID[x]){
-			if( GRID[x][b] === type){
-				column = b
-				return [parseInt(row),parseInt(column)]
-			} 
+// function getIndex(type){
+// 	var row = 0
+// 	var column = 0 
+// 	for(let x in GRID){
+// 		row = x 
+// 		for(let b in GRID[x]){
+// 			if( GRID[x][b] === type){
+// 				column = b
+// 				return [parseInt(row),parseInt(column)]
+// 			} 
 			
-		}
+// 		}
 		
-	}
-	return false
-}
+// 	}
+// 	return false
+// }
 
-var CAT_STORE = [CHEESE]
+
 var LAST_CAT = -1
 var CAT_LOCATIONS = generateRandomCatDirection()
 function generateRandomCatDirection(){
@@ -145,42 +407,7 @@ function randomDirection(limit){
 	}
 	
 }
-function moveMouse(direction,itemType){
-	var current_mouse_position_row = getIndex(itemType)[0]
-	var current_mouse_position_column = getIndex(itemType)[1]
 
-
-	var nextPosition = {
-		'down':[( current_mouse_position_row + 1), current_mouse_position_column],
-		'up':[current_mouse_position_row - 1,current_mouse_position_column],
-		'left':[current_mouse_position_row,current_mouse_position_column + 1],
-		'right':[current_mouse_position_row,current_mouse_position_column - 1],
-		"topright":[current_mouse_position_row,current_mouse_position_column - 1]
-	}
-
-	if(typeof GRID[nextPosition[direction][0]] === 'undefined' || typeof GRID[nextPosition[direction][0]][nextPosition[direction][1]] === 'undefined' ){
-		return false
-	}
-
-	checkIfgameOver()
-	if(itemType === MOUSE){
-		addToScore([ nextPosition[direction][0],nextPosition[direction][1] ])
-		if(GRID[nextPosition[direction][0]][nextPosition[direction][1]] === CAT){
-			gameOver()
-		}
-		GRID[current_mouse_position_row][current_mouse_position_column] = 0	
-	}
-
-	if(itemType === CAT){
-		GRID[current_mouse_position_row][current_mouse_position_column] = CAT_STORE[0]
-		CAT_STORE[0] = GRID[nextPosition[direction][0]][nextPosition[direction][1]]
-		
-	}
-	GRID[nextPosition[direction][0]][nextPosition[direction][1]] = itemType
-
-	buildBox()
-	
-}
 
 function sendCat(direction){
 
@@ -261,72 +488,55 @@ function addToScore(nextPosition){
 	
 }
 
-function youWon(){
+// function youWon(){
 
-	console.log("cheese left",getIndex(CHEESE))
-	if(getIndex(CHEESE) === false){
-		//alert("you won")
-	}
-}
-const box = (mouse) =>{ return `<span class='box'>${mouse}</span>` } 
+// 	console.log("cheese left",getIndex(CHEESE))
+// 	if(getIndex(CHEESE) === false){
+// 		//alert("you won")
+// 	}
+// }
 
-function buildBox(){
+var box = (item) =>{ 
+  	return `<span class='box'>${item}</span>` 
+  } 
 
-	var html = ""
-	var row = ""
-	for (let x in GRID){
-		html += "<div style='display:block'>"
+// function buildBox(){
 
-		for(let b in GRID[x]){
-			if (GRID[x][b] === MOUSE){
-				var mouse = "<img src='mouse.png'width='16' height='16'/>"
-			}
+// 	var html = ""
+// 	var row = ""
+// 	for (let x in GRID){
+// 		html += "<div style='display:block'>"
 
-			if (GRID[x][b] === EMPTY){
-				var mouse = ''
-			}
+// 		for(let b in GRID[x]){
+// 			if (GRID[x][b] === MOUSE){
+// 				var mouse = "<img src='mouse.png'width='16' height='16'/>"
+// 			}
 
-			if (GRID[x][b] === CHEESE){
-				var mouse = "<img src='cheese.png' width='16' height='16'/>"
-			}
+// 			if (GRID[x][b] === EMPTY){
+// 				var mouse = ''
+// 			}
 
-			if (GRID[x][b] === CAT){
-				var mouse = "<img src='cat.png' width='16' height='16'/>"
-			}
+// 			if (GRID[x][b] === CHEESE){
+// 				var mouse = "<img src='cheese.png' width='16' height='16'/>"
+// 			}
 
-			html += box(mouse)
-		}
+// 			if (GRID[x][b] === CAT){
+// 				var mouse = "<img src='cat.png' width='16' height='16'/>"
+// 			}
 
-		html += "</div>"
+// 			html += box(mouse)
+// 		}
+
+// 		html += "</div>"
 		
 		
-	}
-	$("#pane").html(html)
-	youWon()
-}
-buildBox()
-sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
-document.onkeydown = checkKey;
+// 	}
+// 	$("#pane").html(html)
+// 	youWon()
+// }
+// buildBox()
+// sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
 
-function checkKey(e) {
-
-    e = e || window.event;
-
-    if (e.keyCode == '38') {
-       moveMouse("up",MOUSE)
-    }
-    else if (e.keyCode == '40') {
-       moveMouse("down",MOUSE)
-    }
-    else if (e.keyCode == '37') {
-       moveMouse("right",MOUSE)
-    }
-    else if (e.keyCode == '39') {
-      moveMouse("left",MOUSE)
-    }
-    
-
-}
 
 
 
