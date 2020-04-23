@@ -50,12 +50,14 @@
 			text-align:center;
 			font-size: 10px
 			min-height:10px;
-
-			
 		}
 		.topContainer{
 			width:100%;
 
+		}
+		.mouse-fliped{
+			-webkit-transform: scaleX(-1);
+			 transform: scaleX(-1);
 		}
 
 	</style>
@@ -82,7 +84,7 @@
 
 	var _LIVES = 3 
 	const _CHEESE_ITEM_IMG = "<img src='cheese.png' width='16' height='16'/>"
-	const _MOUSE_ITEM_IMG = "<img src='mouse.png'width='16' height='16'/>"
+	const _MOUSE_ITEM_IMG = "<img class='mouse' src='mouse.png'width='16' height='16'/>"
 	const _CAT_ITEM_IMG = "<img src='cat.png' width='16' height='16'/>"
 	var _DIRECTIONS = ["down","up","left","right"]
 	function newGame(){
@@ -106,6 +108,16 @@ class Game {
   	this.cat_directions = ["left","up","down","right"]
   	this.last_cat_direction  = 0
   	this.last_cat_apperence = 1
+  	this.mouseFlipped = false
+  	this.mouseIMG = ()=> {
+
+  			if(this.mouseFlipped){
+  				return "<img class='mouse mouse-fliped' src='mouse.png'width='16' height='16'/>"
+  			}else{
+  				return "<img class='mouse' src='mouse.png' width='16' height='16'/>"
+  			}
+  			
+  	} 
   	this._started = 0
   	this.cats = 3
   	this.score = 0
@@ -147,10 +159,15 @@ class Game {
   	    	game.move(MOUSE,"down")
   	    }
   	    else if (e.keyCode == '37') {
+  	    	self.mouseFlipped = true
   	      game.move(MOUSE,"right")
+  	      
+  	      
   	    }
   	    else if (e.keyCode == '39') {
+  	    	self.mouseFlipped = false
   	      game.move(MOUSE,"left")
+  	     	
   	    }
   	}
 
@@ -210,7 +227,7 @@ class Game {
 			for(let column in GRID[row]){
 				switch(GRID[row][column]) {
   			  case MOUSE:
-  			    var boxItem = _MOUSE_ITEM_IMG
+  			    var boxItem = this.mouseIMG()
   			    break;
   			  case CHEESE:
   			    var boxItem = _CHEESE_ITEM_IMG
