@@ -18,7 +18,6 @@
 		}
 		.box{
 			position:relative;
-			border:1px solid black;
 			min-height:32px;
 			min-width:32px;
 			display:inline-block;
@@ -27,7 +26,8 @@
 			background-color:silver;;
 			font-size: 0;
 			margin-top:-5px;
-			border: 0.3px solid #909090;
+
+			/*border: 0.3px solid #909090;*/
 		}
 
 		.score{
@@ -48,8 +48,9 @@
 			padding:5px;
 			min-width:25%;
 			text-align:center;
-			font-size: 10px
 			min-height:10px;
+			border-radius: 5px;
+
 		}
 		.topContainer{
 			width:100%;
@@ -59,7 +60,9 @@
 			-webkit-transform: scaleX(-1);
 			 transform: scaleX(-1);
 		}
-
+		body{
+			background: antiquewhite;
+		}
 	</style>
 
 </head>
@@ -134,7 +137,12 @@ class Game {
   // get started() {
   //     return this._started
   // }
-
+  youWon(){
+  	console.log("CHEESE",this.getIndex(CHEESE))
+  	if(!this.getIndex(CHEESE)){
+  		alert("Winner Winner Chicken Dinner!")
+  	}
+  }
   bindKeys(){
 
   	document.onkeydown = checkKey;
@@ -181,17 +189,26 @@ class Game {
   		alert("Game Over")
   		return
   	}
+  	alert("Try again! You have more lives!")
   	$(".livescounter").html(_LIVES)
   	//alert("gameover")
+  	this.stopGame()
   }
 
   displayBoxItem(item){ 
   	return `<span class='box'>${item}</span>` 
   }
   youWon(){
-  	if(this.getIndex(CHEESE) === false){
-  		//alert("you won")
+  	if(!this.getIndex(CHEESE)){
+  		alert("you won")
   	}
+  }
+
+  stopGame(){
+  		clearInterval(this.timer)
+  		document.onkeydown = false
+  		console.log("STOPP")
+
   }
 	
 	getIndex(type){
@@ -298,6 +315,7 @@ class Game {
 		
 		if(itemType === MOUSE){
   		
+  	
   		// if my next move has a cat then it's game over
   		if(GRID[newRow][newColumn] === CAT ){
   			return this.gameover()
@@ -305,9 +323,11 @@ class Game {
   		}
   		// add score if cheese
   		this.addScore(nextPosition[direction])
+
   		
   		// you got the cheese so now empty  
   		GRID[row][column] = EMPTY	
+  		this.youWon()
 
   	}
 
@@ -393,6 +413,7 @@ class Game {
 
 
   Cat_AI(direction,limit){
+
   	var i = 0
   	var self = this
 
@@ -410,7 +431,7 @@ class Game {
 
 			if(i == limit){
   			console.log("reached limit")
-  			clearInterval(timer)
+  			clearInterval(this.timer)
   			var row = self.getIndex(CAT)[0]
   			var column = self.getIndex(CAT)[1]
   			GRID[row][column] = CAT_STORE[0]
@@ -419,7 +440,7 @@ class Game {
   		}
   			// sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
 		}
-		var timer = setInterval(timer_function,this.speed)
+		this.timer = setInterval(timer_function,this.speed)
   }
  
 
