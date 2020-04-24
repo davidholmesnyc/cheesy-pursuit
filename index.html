@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Mouse Cat Game</title>
 	<style>
+
+		body{
+			zoom: 125%;
+		}
 		#pane {
 		
 		  margin-top: 5px;
@@ -18,8 +22,10 @@
 		}
 		.box{
 			position:relative;
-			min-height:32px;
-			min-width:32px;
+/*			min-height:32px;
+			min-width:32px;*/
+			min-height: 40px;
+			min-width: 40px;
 			display:inline-block;
 			margin:0px;
 			padding:0px;
@@ -63,6 +69,88 @@
 		body{
 			background: antiquewhite;
 		}
+		/**
+		 * CSS3 keyboard arrow keys
+		 */
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box}
+
+	
+
+		ul {
+			list-style: none;
+			position: relative;	
+			width: 152px;
+			height: 104px;
+			left: 50%;
+			top: 30%;
+			margin-left: -76px}
+
+		li {
+			position: absolute;
+			top: 56px;
+			display: block;
+			text-decoration: none;
+			text-align: center;
+			width: 40px;
+			height: 40px;
+			line-height: 40px;
+			background-color: #f1f1f1;
+			border: 1px solid #eee;
+			border-radius: 8px;
+			box-shadow: 0 6px 10px rgba(0,0,0,.3);
+			animation-duration: 1.5s;
+			animation-timing-function: linear;
+			animation-iteration-count: infinite}
+
+		li:nth-child(1) {
+			top: 8px;
+			left: 56px;
+			animation-name: clickUp}
+
+		li:nth-child(2) {
+			left: 8px;
+			
+		}
+
+		li:nth-child(3) {
+			left: 56px;
+			animation-name: clickDown;
+			animation-delay: .75s}
+
+		li:nth-child(4) {
+			left: 104px;
+			
+		}
+
+/*
+		@keyframes clickUp {
+			0% {
+				top: 8px;
+				background-color: #f1f1f1;
+				box-shadow: 0 6px 10px rgba(0,0,0,.3)}
+			100% {
+				top: 10px;
+				background-color: #ebebeb;
+				box-shadow: inset 0 0 40px 10px rgba(0,0,0,.02);
+				box-shadow: 0 2px 4px rgba(0,0,0,.1)}
+		}
+
+
+		@keyframes clickDown {
+			0% {
+				top: 56px;
+				background-color: #f1f1f1;
+				box-shadow: 0 6px 10px rgba(0,0,0,.3)}
+			100% {
+				top: 58px;
+				background-color: #ebebeb;
+				box-shadow: inset 0 0 40px 10px rgba(0,0,0,.02);
+				box-shadow: 0 2px 4px rgba(0,0,0,.1)}
+			}*/
 	</style>
 
 </head>
@@ -71,10 +159,60 @@
 <body>
 
 
-
 <div id="pane"></div>
+<ul>
+	<li onclick="simulateKey(38)">&#8593;</li>
+	<li onclick="simulateKey(37)">&#8592;</li>
+	<li onclick="simulateKey(40)">&#8595;</li>
+	<li onclick="simulateKey(39)" >&#8594;</li>
+</ul>
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
+
+	function simulateKeyPress (keyCode, type, modifiers) {
+		var evtName = (typeof(type) === "string") ? "key" + type : "keydown";	
+		var modifier = (typeof(modifiers) === "object") ? modifier : {};
+
+		var event = document.createEvent("HTMLEvents");
+		event.initEvent(evtName, true, false);
+		event.keyCode = keyCode;
+		
+		for (var i in modifiers) {
+			event[i] = modifiers[i];
+		}
+
+		document.dispatchEvent(event);
+	}
+
+	function simulateKey(key){
+		simulateKeyPress(key)
+	}
+
+	
+
+	function simulateKeyPress_(character) {
+		// jQuery.event.trigger({ type : 'keydown', which : character.charCodeAt(0) });
+
+		var kbEvent= document.createEvent("KeyboardEvent");
+		var initMethod = typeof kbEvent.initKeyboardEvent !== 'undefined' ? "initKeyboardEvent" : "initKeyEvent";
+
+		kbEvent[initMethod](
+		                   "keypress", // event type : keydown, keyup, keypress
+		                    true, // bubbles
+		                    true, // cancelable
+		                    window, // viewArg: should be window
+		                    false, // ctrlKeyArg
+		                    false, // altKeyArg
+		                    false, // shiftKeyArg
+		                    false, // metaKeyArg
+		                    38, // keyCodeArg : unsigned long the virtual key code , else 0
+		                    0 // charCodeArgs : unsigned long the Unicode character associated with the depressed key, else 0
+		);
+		document.dispatchEvent(kbEvent);
+
+	}
 	var mouse = ""
 	var SCORE = 0
 	const UP_DOWN_AMOUNT = 8
@@ -85,6 +223,7 @@
 	const CAT = 2
 	const EMPTY = 0
 
+	var CATS = [5,6,7]
 	var _LIVES = 3 
 	const _CHEESE_ITEM_IMG = "<img src='cheese.png' width='16' height='16'/>"
 	const _MOUSE_ITEM_IMG = "<img class='mouse' src='mouse.png'width='16' height='16'/>"
@@ -100,10 +239,8 @@
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 	]
-
 	var GRID_OG = GRID
-
-var CAT_STORE = [CHEESE]
+	var CAT_STORE = [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE]
 
 
 class Game {
@@ -113,7 +250,9 @@ class Game {
   	this.cat_directions = ["left","up","down","right"]
   	this.last_cat_direction  = 0
   	this.last_cat_apperence = 1
+  	this.current_cat_direction = []
   	this.mouseFlipped = false
+  	this.timer = []
   	this.mouseIMG = ()=> {
 
   			if(this.mouseFlipped){
@@ -124,19 +263,29 @@ class Game {
   			
   	} 
   	this._started = 0
-  	this.cats = 3
+  	this.MAX_CATS = options.MAX_CATS  || 1
   	this.score = options.score || 0
   }
 
   start(){
   	this.buildBox()
+
+  	// this.startOnKeyPresss
 		this.bindKeys(this.startOnKeyPresss)
   }
 
   startOnKeyPresss(self,e){
   	const arrow_keys = [38, 40, 37,39];
   	if (arrow_keys.includes(e.keyCode) && self._started == 0  ){
-  		self.sendCat(false)
+  		
+  		self.sendCatsTimer = setInterval(function(){ 
+  				var i = self.cats
+  				
+  			
+  				self.startCat() 
+
+  		},self.speed)
+  		// self.sendCat(false)
   		self._started = 1 
   	}
   }
@@ -172,7 +321,7 @@ class Game {
   	function checkKey(e) {
 
   	    e = e || window.event;
-  	   	callback(self,e)
+  	   	if (callback) callback(self,e)
 
   	
 
@@ -202,11 +351,11 @@ class Game {
   	_LIVES = _LIVES - 1 
   	if(_LIVES < 0){
   		$(".score").html("gameover")
-  		alert("Game Over")
+  		//alert("Game Over")
   		this.stopGame()
   		return
   	}
-  	alert("Try again! You have more lives!")
+  	//alert("Try again! You have more lives!")
   	$(".livescounter").html(_LIVES)
   	//alert("gameover")
   	
@@ -223,26 +372,61 @@ class Game {
 
   stopGame(){
   		clearInterval(this.timer)
+  		clearInterval(this.sendCatsTimer)
+
+  		for(var x in this.timer){
+  			clearInterval(this.timer[x])
+  		}
   		document.onkeydown = false
   		console.log("STOPP")
 
   }
-	
-	getIndex(type){
+		getIndex(type){
+	  	var row = 0
+	  	var column = 0
+	  	var arr = []
+	  	for(let x in GRID){
+	  		row = x 
+	  		for(let b in GRID[x]){
+	  			if( GRID[x][b] === type){
+	  				column = b
+	  				// arr.push([parseInt(row),parseInt(column)])
+	  				return [parseInt(row),parseInt(column)]
+	  			} 
+	  		}
+
+
+	  	}
+
+	  	// if (arr.length > 0){
+	  	// 	return arr
+	  	// }
+
+	  	return false
+	  }
+	getCatLocations(){
   	var row = 0
-  	var column = 0 
+  	var column = 0
+  	var arr = []
   	for(let x in GRID){
   		row = x 
   		for(let b in GRID[x]){
-  			if( GRID[x][b] === type){
+  			if(CATS.includes(GRID[x][b])){
   				column = b
-  				return [parseInt(row),parseInt(column)]
+  				arr.push([parseInt(row),parseInt(column)])
+  				
   			} 
-  			
   		}
+		}
+
+  	if (arr.length > 0){
+  		return arr
   	}
+
   	return false
   }
+
+
 
 
   livesBox(){
@@ -272,6 +456,11 @@ class Game {
   			  default:
   			    var boxItem = ''
   			}
+  			
+  			if(CATS.includes(GRID[row][column])){
+  				var boxItem = _CAT_ITEM_IMG
+  			}
+
 				html += this.displayBoxItem(boxItem)
   		}
 			html += "</div>"
@@ -281,7 +470,16 @@ class Game {
   }
 
 
+  // moveCat(){
+  // 	for(let cat in CATS){
+  // 			var get_cat_location = this.getIndex(CATS[cat])
+  // 			if(get_cat_location){
+  // 				setInterval()
+  // 				console.log(get_cat_location)
+		// 		}
+  // 	}
 
+  // }
   avaiablegridBox(row,column){
   	if
   	(
@@ -297,6 +495,20 @@ class Game {
   // progress(){
   // 	$("#score").html()
   // }
+  arraysMatch = function (arr1, arr2) {
+
+  	// Check if the arrays are the same length
+  	if (arr1.length !== arr2.length) return false;
+
+  	// Check if all items exist and are in the same order
+  	for (var i = 0; i < arr1.length; i++) {
+  		if (arr1[i] !== arr2[i]) return false;
+  	}
+
+  	// Otherwise, return true
+  	return true;
+
+  };
 
   addScore(nextPosition){
   	if(GRID[nextPosition[0]][nextPosition[1]] === CHEESE){
@@ -313,6 +525,19 @@ class Game {
   	}
   }
 
+  checkifCatnearby(location){
+  	for(let cat in CATS){
+  		var get_cat_location = this.getIndex(CATS[cat])
+  		if(get_cat_location){
+  			if(this.arraysMatch(location,[get_cat_location[0],get_cat_location[1]]) ){
+  				console.log("CATS NERBY")
+  					return true
+
+  			}
+  		}
+  	}
+  	return false
+  }
   // MOVE FUNCTIONS 
   move(itemType,direction){
   	var row = this.getIndex(itemType)[0]
@@ -326,18 +551,25 @@ class Game {
   	}
 		var [newRow,newColumn] = [nextPosition[direction][0],nextPosition[direction][1]]
   	
-  	// if they don't exist on the grid then don't make any changes 
+  	// if they don't exist but it's a cat then restore previous one
+ 		if (!this.avaiablegridBox(newRow,newColumn) && CATS.includes(itemType)){
+ 				
+ 				clearInterval(this.timer[itemType])
+				GRID[row][column] = CAT_STORE[itemType]
+				this.buildBox()
+	  		return
+ 		}
+
+ 		// if they don't exist on the grid then don't make any changes 
  		if (!this.avaiablegridBox(newRow,newColumn)) return 
 		
 		
 		if(itemType === MOUSE){
-  		
-  	
   		// if my next move has a cat then it's game over
-  		if(GRID[newRow][newColumn] === CAT ){
+  		if(CATS.includes(GRID[newRow][newColumn])){
+  		// if(GRID[newRow][newColumn] === CAT ){
   			return this.gameover()
-
-  		}
+			}
   		// add score if cheese
   		this.addScore(nextPosition[direction])
 
@@ -348,16 +580,26 @@ class Game {
 
   	}
 
-  	if(itemType === CAT){
-
-  		GRID[row][column] = CAT_STORE[0]
-  		CAT_STORE[0] = GRID[newRow][newColumn]
-
-
-  	}
+  	if(CATS.includes(itemType)){
+  		if(this.checkifCatnearby([newRow,newColumn])) return 
+  		if(CAT_STORE[itemType] === CHEESE){
+  			GRID[row][column] = CAT_STORE[itemType]
+  			CAT_STORE[itemType] = GRID[newRow][newColumn]
+  		}else{
+  			GRID[row][column] = EMPTY
+  			CAT_STORE[itemType] =  GRID[newRow][newColumn]
+			}
+  		
+			
+  		var mouselocation = this.getIndex(MOUSE)
+  		
+  		if( this.arraysMatch(mouselocation, [newRow,newColumn])){
+  			this.gameover()
+  		} 
+  		// check if cat nearby	
+  		
+		}
   	
-  	
-
   	// set the next postion
   	GRID[newRow][newColumn] = itemType
   	// rebuild box
@@ -367,105 +609,75 @@ class Game {
   }
 
 
-  random(oldValue,max){
+  random(max){
   	var oldValue = parseInt(oldValue)
   	var max = parseInt(max)
 		var r = Math.round(Math.random() * max)
-		if(r === oldValue){
-			this.random(oldValue,max)
-		}
+		// if(r === oldValue){
+		// 	return this.random(oldValue,max)
+		// }
 		return parseInt(r)
   }
 
-  addCatToGrid(row,column){
-  	// cats are already on the board
-  	if(this.getIndex(CAT)) return 
-  	GRID[row][column] = CAT
-  	this.buildBox()
-  }
-
-  sendCat(direction){
-
-  	console.log("randomValue",randomValue)
-  	console.log("this.last_cat_direction",this.last_cat_direction)
-  	var randomValueDirection = this.random(this.last_cat_direction,(this.cat_directions.length -1 ))
-		console.log("randomValueDirection",randomValueDirection)
-  	if(!direction){
-  		var direction = this.cat_directions[randomValueDirection]
-  	}
-
-  	console.log("direction",direction)
-  	
-  	if(direction === "up"){
-  		var limit = 5
-  		var row = 4
-  		// var column = 1 || randomDirection(GRID[4].length)
-  		var column = this.random(this.last_cat_direction,(GRID[0].length - 1))
-  	}
-  	if(direction === "down"){
-  		var limit = 5
-  		var row = 0
-  		var column = this.random(this.last_cat_direction,(GRID[0].length - 1))
-  		// var column = 0 || randomDirection(GRID[0].length)
-  	}
-  	if(direction === "left"){
-  		var limit = 7
-  		var row = this.random(this.last_cat_apperence,(GRID.length - 1))
-  		console.log("left row",row)
-  		var column = 0
-  	}
-  	if(direction === "right"){
-  		var limit = 7
-  		var row = this.random(this.last_cat_apperence,(GRID.length - 1))
-  		console.log("right_row",row)
-  		var column = 6
-  	}
-
-  	this.addCatToGrid(row,column)
-  	var randomValue = this.random(this.last_cat_direction,limit)
-  	this.Cat_AI(direction,limit)
-  	this.last_cat_apperence = randomValue
-  	this.last_cat_direction = randomValueDirection
-  }
-
-
-  Cat_AI(direction,limit){
-
-  	var i = 0
-  	var self = this
-
-  	// before we can move lets see if we need to add cat to grid 
-  	self.addCatToGrid(0,0)
-		
-		function timer_function(){
-			
-			console.log("interval_running")
-  		self.move(CAT,direction)
-  		if(!self.getIndex(MOUSE)) return self.gameover()
-  		// console.log("catlocation",catlocation)
-  		// self.addScore(catLocation)
-  		i = i + 1
-
-			if(i == limit){
-  			console.log("reached limit")
-  			clearInterval(self.timer)
-  			var row = self.getIndex(CAT)[0]
-  			var column = self.getIndex(CAT)[1]
-  			GRID[row][column] = CAT_STORE[0]
-  			self.buildBox()
-  			self.sendCat(false)
-  		}
-  			// sendCat(_DIRECTIONS[random(_DIRECTIONS.length)])
+ 	
+	addCat(direction){
+	 	var cd = {
+	 		"down":[0,2],
+	 		"up":[4,5],
+	 		"left":[1,0],
+	 		"right":[2,6],
 		}
-		this.timer = setInterval(timer_function,this.speed)
-  }
- 
+		console.log("CAT LOCATIONS",this.getCatLocations().length )
+		if(this.getCatLocations().length >= this.MAX_CATS){
+			return 
+		}
+
+		console.log("DIRECCCTIN",direction)
+	 	for(let cat in CATS){
+	 		var get_cat_location = this.getIndex(CATS[cat])
+	 
+	 		
+	 		if(!get_cat_location && get_cat_location === false){
+	 			GRID[cd[direction][0]][cd[direction][1]] = CATS[cat]
+	 			this.current_cat_direction[CATS[cat]] = direction
+	 			this.buildBox()
+	 			this.autoCat(CATS[cat],direction)
+	 			return true
+			}
+	 	}
+	}
+
+	autoCat(cat,direction){
+		 	var self = this
+		 	if(typeof this.timer[cat] != "undefined") {
+		 		clearInterval(this.timer[cat])
+		 		// alert(true)
+		 	}
+		 	var timerFunction= function(){
+		 		game.move(cat,direction)
+		 	}
+
+		 	this.timer[cat] = setInterval(timerFunction,this.speed)
+
+	 }
+
+	 startCat(){
+	 		// var random = this.random(this.last_cat_direction,this.cat_directions.length)
+	 		var random = this.random( (this.cat_directions.length - 1 ))
+	 		var randomCatLocation = this.cat_directions[random]
+
+	 		
+	 		this.addCat(randomCatLocation)
+
+	 		// this.last_cat_direction = random
+	 }
 
 }
 
 var game = new Game({
 	"id":"#pane",
-	"score":""
+	"score":"",
+	"speed":1000,
 })
 
 game.start()
