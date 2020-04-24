@@ -8,21 +8,37 @@
 		body{
 					zoom: 200%;
 		}
+		.only_mobile{
+			display: none ;
+		}
 
 		@media (max-device-width: 1024px) {
+
+			.only_mobile{
+				display:inline-block;
+			}
 		  body{
 		  			zoom: 250%;
 		  }
 		}
 		@media (max-device-width: 640px) {
+			.only_mobile{
+				display:inline-block;
+			}
 		 body{
 		 	  			zoom: 120%;
 		 	  }
 		}
 		@media (max-device-width: 540px) {
+			.only_mobile{
+				display:inline-block;
+			}
 		 /*Smaller and smaller...*/
 		}
 		@media (max-device-width: 320px) {
+			.only_mobile{
+				display:inline-block;
+			}
 		   body{
 		 	  			zoom: 100%;
 		 	  }
@@ -186,11 +202,7 @@
 			}*/
 
 
-			html,
-			body {
-			  position: fixed;
-			  overflow: hidden;
-			}
+	
 
 
 	</style>
@@ -205,7 +217,7 @@
 	</audio>
 
 <div id="pane"></div>
-<ul style="display:none">
+<ul class="only_mobile" >
 	<li onclick="simulateKey(38)">&#8593;</li>
 	<li onclick="simulateKey(37)">&#8592;</li>
 	<li onclick="simulateKey(40)">&#8595;</li>
@@ -215,62 +227,69 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+<style>
+	/*	html,
+		body {
+		  position: fixed;
+		  overflow: hidden;
+		}*/
+</style>
 <script>
-	var container = document.body;
+	// var container = document.body;
 
-	 container.addEventListener("touchstart", startTouch, false);
-	 container.addEventListener("touchmove", moveTouch, false);
+	//  container.addEventListener("touchstart", startTouch, false);
+	//  container.addEventListener("touchmove", moveTouch, false);
 
-	 // Swipe Up / Down / Left / Right
-	 var initialX = null;
-	 var initialY = null;
+	//  // Swipe Up / Down / Left / Right
+	//  var initialX = null;
+	//  var initialY = null;
 
-	 function startTouch(e) {
-	   initialX = e.touches[0].clientX;
-	   initialY = e.touches[0].clientY;
-	 };
+	//  function startTouch(e) {
+	//    initialX = e.touches[0].clientX;
+	//    initialY = e.touches[0].clientY;
+	//  };
 
-	 function moveTouch(e) {
-	   if (initialX === null) {
-	     return;
-	   }
+	//  function moveTouch(e) {
+	//    if (initialX === null) {
+	//      return;
+	//    }
 
-	   if (initialY === null) {
-	     return;
-	   }
+	//    if (initialY === null) {
+	//      return;
+	//    }
 
-	   var currentX = e.touches[0].clientX;
-	   var currentY = e.touches[0].clientY;
+	//    var currentX = e.touches[0].clientX;
+	//    var currentY = e.touches[0].clientY;
 
-	   var diffX = initialX - currentX;
-	   var diffY = initialY - currentY;
+	//    var diffX = initialX - currentX;
+	//    var diffY = initialY - currentY;
 
-	   if (Math.abs(diffX) > Math.abs(diffY)) {
-	     // sliding horizontally
-			if (diffX > 0) {
-	       // swiped left
-	       simulateKey(37)
+	//    if (Math.abs(diffX) > Math.abs(diffY)) {
+	//      // sliding horizontally
+	// 		if (diffX > 0) {
+	//        // swiped left
+	//        simulateKey(37)
 	      
-	     } else {
-	       // swiped right
-	       simulateKey(39)
-	     }  
-	   } else {
-	     // sliding vertically
-	     if (diffY > 0) {
-	       // swiped up
-	       simulateKey(38)
-	     } else {
-	       // swiped down
-	        simulateKey(40)
-	     }  
-	   }
+	//      } else {
+	//        // swiped right
+	//        simulateKey(39)
+	//      }  
+	//    } else {
+	//      // sliding vertically
+	//      if (diffY > 0) {
+	//        // swiped up
+	//        simulateKey(38)
+	//      } else {
+	//        // swiped down
+	//         simulateKey(40)
+	//      }  
+	//    }
 
-	   initialX = null;
-	   initialY = null;
+	//    initialX = null;
+	//    initialY = null;
 
-	   e.preventDefault();
-	 };
+	//    e.preventDefault();
+	//  };
 </script>
 <script>
 
