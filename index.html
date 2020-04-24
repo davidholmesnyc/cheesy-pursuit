@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0"/>
 	<title>Mouse Cat Game</title>
 	<style>
 
@@ -97,7 +97,9 @@
 		* {
 			margin: 0;
 			padding: 0;
-			box-sizing: border-box}
+			box-sizing: border-box;
+			touch-action: manipulation;
+		}
 
 	
 
@@ -188,7 +190,10 @@
  
 
 <body>
-
+	<audio id="myAudio">
+	  <source src="win.wav" type="audio/wav">
+	  Your browser does not support the audio element.
+	</audio>
 
 <div id="pane"></div>
 <ul>
@@ -331,10 +336,20 @@ class Game {
   	console.log("CHEESE",this.getIndex(CHEESE))
   	if(!this.getIndex(CHEESE)){
   		this.stopGame()
-  		alert("Winner Winner Chicken Dinner!")
-  		location.reload()
+  		this.playSound("win")
+  		setTimeout(function(){
+  			alert("Winner Winner Chicken Dinner!")
+  		},200)
+  		//location.reload()
   		// this.nextLevel()
   	}
+  }
+
+  playSound(sound){
+  	var x = document.getElementById("myAudio");
+  	x.pause()
+  	x.src = `${sound}.wav`
+  	x.play()
   }
 
   nextLevel(){
@@ -614,6 +629,7 @@ class Game {
   		// you got the cheese so now empty  
   		GRID[row][column] = EMPTY	
   		this.youWon()
+  		this.playSound("mouse_mov")
 
   	}
 
@@ -641,6 +657,7 @@ class Game {
   	GRID[newRow][newColumn] = itemType
   	// rebuild box
   	this.buildBox()
+
 
   	return [newRow,newColumn]
   }
