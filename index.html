@@ -6,11 +6,32 @@
 	<style>
 
 		body{
-			zoom: 125%;
+					zoom: 200%;
 		}
+
+		@media (max-device-width: 1024px) {
+		  body{
+		  			zoom: 250%;
+		  }
+		}
+		@media (max-device-width: 640px) {
+		 body{
+		 	  			zoom: 120%;
+		 	  }
+		}
+		@media (max-device-width: 540px) {
+		 /*Smaller and smaller...*/
+		}
+		@media (max-device-width: 320px) {
+		   body{
+		 	  			zoom: 100%;
+		 	  }
+		}
+
 		#pane {
 		
 		  margin-top: 5px;
+		  text-align: center;
 		  
 		}
 
@@ -87,7 +108,10 @@
 			height: 104px;
 			left: 50%;
 			top: 30%;
-			margin-left: -76px}
+			left: 46%;
+			margin-left: -76px;
+			-webkit-user-select: none;
+		}
 
 		li {
 			position: absolute;
@@ -95,8 +119,8 @@
 			display: block;
 			text-decoration: none;
 			text-align: center;
-			width: 40px;
-			height: 40px;
+			width: 60px;
+			height: 60px;
 			line-height: 40px;
 			background-color: #f1f1f1;
 			border: 1px solid #eee;
@@ -104,7 +128,9 @@
 			box-shadow: 0 6px 10px rgba(0,0,0,.3);
 			animation-duration: 1.5s;
 			animation-timing-function: linear;
-			animation-iteration-count: infinite}
+			animation-iteration-count: infinite
+
+		}
 
 		li:nth-child(1) {
 			top: 8px;
@@ -113,16 +139,21 @@
 
 		li:nth-child(2) {
 			left: 8px;
+			left: -20px;
+			top: 80px;
 			
 		}
 
 		li:nth-child(3) {
 			left: 56px;
+			margin-top: 102px;
 			animation-name: clickDown;
 			animation-delay: .75s}
 
 		li:nth-child(4) {
 			left: 104px;
+			left: 135px;
+			top: 80px;
 			
 		}
 
@@ -301,6 +332,7 @@ class Game {
   	if(!this.getIndex(CHEESE)){
   		this.stopGame()
   		alert("Winner Winner Chicken Dinner!")
+  		location.reload()
   		// this.nextLevel()
   	}
   }
@@ -439,9 +471,12 @@ class Game {
 	
 	buildBox(){
 		var html = `<div class="topContainer">${this.scoreBox()}${this.livesBox()}</div>`
+
+		html += "<div class='grid'>"
+
   	var row = ""
   	for (let row in GRID){
-  		html += "<div style='display:block'>"
+  		html += "<div class='row'>"
 			for(let column in GRID[row]){
 				switch(GRID[row][column]) {
   			  case MOUSE:
@@ -465,6 +500,8 @@ class Game {
   		}
 			html += "</div>"
   	}
+
+  	html +="</div>" // grid html 
   	$(this._id).html(html)
   	this.youWon()
   }
