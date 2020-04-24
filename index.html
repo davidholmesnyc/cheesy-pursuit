@@ -425,6 +425,7 @@ class Game {
   		this.playSound("win")
   		setTimeout(function(){
   			alert("Winner Winner Chicken Dinner!")
+  			location.reload()
   		},200)
   		//location.reload()
   		// this.nextLevel()
@@ -484,11 +485,22 @@ class Game {
   	_LIVES = _LIVES - 1 
   	if(_LIVES < 0){
   		$(".score").html("gameover")
-  		//alert("Game Over")
+
+  		this.playSound("lost")
+  		setTimeout(function(){
+  			alert("Game Over")
+  			location.reload()
+  		},500)
+
+  		
   		this.stopGame()
   		return
   	}
-  	//alert("Try again! You have more lives!")
+  	this.playSound("cat_caught_mouse")
+  	setTimeout(function(){
+  		alert("Oh no you got caught")
+  	}
+  		,200)
   	$(".livescounter").html(_LIVES)
   	//alert("gameover")
   	
@@ -657,7 +669,7 @@ class Game {
   }
   checkForCat(nextPosition){
   	if(GRID[nextPosition[0]][nextPosition[1]] === this.getIndex(CAT)){
-  		gameOver()
+  		this.gameOver()
   	}else{
   		return true
   	}
@@ -721,14 +733,15 @@ class Game {
 
   	if(CATS.includes(itemType)){
   		if(this.checkifCatnearby([newRow,newColumn])) return 
-  		if(CAT_STORE[itemType] === CHEESE){
-  			GRID[row][column] = CAT_STORE[itemType]
-  			CAT_STORE[itemType] = GRID[newRow][newColumn]
-  		}else{
-  			GRID[row][column] = EMPTY
-  			CAT_STORE[itemType] =  GRID[newRow][newColumn]
-			}
-  		
+  	// 	if(CAT_STORE[itemType] === CHEESE){
+  	// 		GRID[row][column] = CAT_STORE[itemType]
+  	// 		CAT_STORE[itemType] = GRID[newRow][newColumn]
+  	// 	}else{
+  	// 		GRID[row][column] = EMPTY
+  	// 		CAT_STORE[itemType] =  GRID[newRow][newColumn]
+			// }
+  		GRID[row][column] = CAT_STORE[itemType]
+  		CAT_STORE[itemType] = GRID[newRow][newColumn]
 			
   		var mouselocation = this.getIndex(MOUSE)
   		
