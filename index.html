@@ -105,6 +105,7 @@
 		}
 		body{
 			background: antiquewhite;
+			touch-action: manipulation;
 		}
 		/**
 		 * CSS3 keyboard arrow keys
@@ -115,6 +116,7 @@
 			padding: 0;
 			box-sizing: border-box;
 			touch-action: manipulation;
+			-webkit-user-select: none;
 		}
 
 	
@@ -292,7 +294,7 @@
 	//  };
 </script>
 <script>
-
+	document.body.addEventListener("click", event => {});
 	function simulateKeyPress (keyCode, type, modifiers) {
 		var evtName = (typeof(type) === "string") ? "key" + type : "keydown";	
 		var modifier = (typeof(modifiers) === "object") ? modifier : {};
@@ -448,6 +450,8 @@ class Game {
 
   	game.start()
   }
+
+
   bindKeys(callback){
 
   	document.onkeydown = checkKey;
