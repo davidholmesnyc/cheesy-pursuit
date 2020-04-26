@@ -398,7 +398,7 @@
 		document.dispatchEvent(kbEvent);
 
 	}
-var mouse = ""
+	var mouse = ""
 	var SCORE = 0
 	const UP_DOWN_AMOUNT = 8
 	const LEFT_RIGHT_AMOUNT = 1
@@ -429,6 +429,7 @@ var mouse = ""
 	]
 	var GRID_OG = GRID
 	var CAT_STORE = [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE]
+	var CAT_STORE = []
 
 class Game {
   constructor(options) {
@@ -487,7 +488,7 @@ class Game {
   // }
   youWon(){
   	console.log("CHEESE",this.getIndex(CHEESE))
-  	if(!this.getIndex(CHEESE)){
+  	if(!this.getIndex(CHEESE) && !this.catStoreHasCheese() ){
   		this.stopGame()
   		this.level.currentLevel = 1
   		this.playSound("win")
@@ -829,6 +830,7 @@ class Game {
   	// 		GRID[row][column] = EMPTY
   	// 		CAT_STORE[itemType] =  GRID[newRow][newColumn]
 			// }
+			console.log("catstore",CAT_STORE[itemType])
   		GRID[row][column] = CAT_STORE[itemType]
   		CAT_STORE[itemType] = GRID[newRow][newColumn]
 			
@@ -877,10 +879,12 @@ class Game {
 		console.log("DIRECCCTIN",direction)
 	 	for(let cat in CATS){
 	 		var get_cat_location = this.getIndex(CATS[cat])
-	 
-	 		
 	 		if(!get_cat_location && get_cat_location === false){
+	 			
+	 			CAT_STORE[CATS[cat]] = GRID[cd[direction][0]][cd[direction][1]]
+	 			
 	 			GRID[cd[direction][0]][cd[direction][1]] = CATS[cat]
+
 	 			this.current_cat_direction[CATS[cat]] = direction
 	 			this.buildBox()
 	 			this.autoCat(CATS[cat],direction)
@@ -888,6 +892,21 @@ class Game {
 			}
 	 	}
 	}
+
+
+	catStoreHasCheese(){
+		
+
+		for(let cat in CATS){
+			var get_cat_location = this.getIndex(CATS[cat])
+			if( get_cat_location && CAT_STORE[CATS[cat]] === CHEESE){
+				return true
+			}
+
+		}
+		return false
+	}
+
 
 	autoCat(cat,direction){
 		 	var self = this
@@ -909,7 +928,8 @@ class Game {
 	 		var randomCatLocation = this.cat_directions[random]
 
 	 		
-	 		this.addCat(randomCatLocation)
+	 		this.addCat("right")
+	 		// this.addCat(randomCatLocation)
 
 	 		// this.last_cat_direction = random
 	 }
