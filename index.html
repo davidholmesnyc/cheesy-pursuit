@@ -398,35 +398,37 @@
 		document.dispatchEvent(kbEvent);
 
 	}
-	var mouse = ""
+var mouse = ""
 	var SCORE = 0
 	const UP_DOWN_AMOUNT = 8
 	const LEFT_RIGHT_AMOUNT = 1
 	// mouse default position
 	const MOUSE = 1 
-	const CHEESE = 3
 	const CAT = 2
-	const EMPTY = 0
-
+	const CHEESE = 3
+	const EMPTY = 4
+	const ROTTEN_CHEESE = 8
+	const MOUSE_WHEEL = 9
 	var CATS = [5,6,7]
 	var _LIVES = 3 
 	const _CHEESE_ITEM_IMG = "<img src='cheese.png' width='16' height='16'/>"
 	const _MOUSE_ITEM_IMG = "<img class='mouse' src='mouse.png'width='16' height='16'/>"
 	const _CAT_ITEM_IMG = "<img src='cat.png' width='16' height='16'/>"
+	const _MOUSE_WHEEL_IMG = "<img src='MOUSE_WHEEL.png' width='16' height='16'/>"
+	const _ROTTEN_CHEESE_IMG = "<img src='ROTTEN_CHEESE.png' width='16' height='16'/>"
 	var _DIRECTIONS = ["down","up","left","right"]
 	function newGame(){
 		location.reload();
 	}
 	var GRID = [
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
 		[CHEESE,CHEESE,CHEESE,MOUSE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[MOUSE_WHEEL,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 	]
 	var GRID_OG = GRID
 	var CAT_STORE = [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE]
-
 
 class Game {
   constructor(options) {
@@ -680,9 +682,16 @@ class Game {
   			  case CAT:
   			    var boxItem = _CAT_ITEM_IMG
   			    break;
+  			  case MOUSE_WHEEL:
+  			    var boxItem = _MOUSE_WHEEL_IMG
+  			    break;
+  			  case ROTTEN_CHEESE:
+  			    var boxItem = _ROTTEN_CHEESE_IMG
+  			    break;
   			  default:
   			    var boxItem = ''
   			}
+  			
   			
   			if(CATS.includes(GRID[row][column])){
   				var boxItem = _CAT_ITEM_IMG
