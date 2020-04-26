@@ -15,7 +15,7 @@
 		touch-action: manipulation;
 		}
 
-		
+
 		.only_mobile{
 			display: none ;
 		}
@@ -102,6 +102,10 @@
 			min-height:10px;
 			border-radius: 5px;
 
+		}
+		.cat{
+			position:relative;
+			z-index: 10;
 		}
 		.topContainer{
 			width:100%;
@@ -236,6 +240,7 @@
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.0/anime.min.js"></script>
 
 <style>
 	/*	html,
@@ -309,11 +314,31 @@
 
 	document.addEventListener("touchstart", event => {
 	    if(event.touches.length > 1) {
-	        console.log("zoom plz stahp");
 	        event.preventDefault();
 	        event.stopPropagation(); // maybe useless
 	    }
 	}, {passive: false});
+
+</script>
+
+<script type="text/javascript">
+
+	setTimeout(function(){
+		var el = document.querySelector('.cat-1-0');
+
+		var arr = [el]
+		for (var i = 1; i <= 6; i++) {
+			arr.push(`.cat-1-${i}`)
+		}
+		anime({
+		  // targets: [el, '.mixed-array-demo .el-02', '.mixed-array-demo .el-03'],
+		  targets: arr,
+		  translateX: 250,
+		  easing: 'linear',
+		  duration: 3000
+		});
+
+	},1000)
 
 </script>
 <script>
@@ -420,7 +445,9 @@
 	var _LIVES = 3 
 	const _CHEESE_ITEM_IMG = "<img src='cheese.png' width='16' height='16'/>"
 	const _MOUSE_ITEM_IMG = "<img class='mouse' src='mouse.png'width='16' height='16'/>"
-	const _CAT_ITEM_IMG = "<img src='cat.png' width='16' height='16'/>"
+	const _CAT_ITEM_IMG = function(row,column){
+		return `<img src='cat.png' class='cat cat-${row}-${column}' width='16' height='16'/>`
+	}
 	const _MOUSE_WHEEL_IMG = "<img src='MOUSE_WHEEL.png' width='16' height='16'/>"
 	const _ROTTEN_CHEESE_IMG = "<img src='ROTTEN_CHEESE.png' width='16' height='16'/>"
 	var _DIRECTIONS = ["down","up","left","right"]
@@ -430,7 +457,7 @@
 	const _START_OF_MOUSE = [2,3]
 	var GRID = [
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
+		[CATS[0],CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[MOUSE_WHEEL,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
@@ -604,8 +631,8 @@ class Game {
   	
   }
 
-  displayBoxItem(item){ 
-  	return `<span class='box'>${item}</span>` 
+  displayBoxItem(item,row,column){ 
+  	return `<span class='box box-${row}-${column}'>${item}</span>` 
   }
   // youWon(){
   // 	if(!this.getIndex(CHEESE)){
@@ -697,7 +724,8 @@ class Game {
 
   	var row = ""
   	for (let row in GRID){
-  		html += "<div class='row'>"
+
+  		html += `<div class='row'>`
 			for(let column in GRID[row]){
 				switch(GRID[row][column]) {
   			  case MOUSE:
@@ -707,7 +735,7 @@ class Game {
   			    var boxItem = _CHEESE_ITEM_IMG
   			    break;
   			  case CAT:
-  			    var boxItem = _CAT_ITEM_IMG
+  			    var boxItem = _CAT_ITEM_IMG(row,column)
   			    break;
   			  case MOUSE_WHEEL:
   			    var boxItem = _MOUSE_WHEEL_IMG
@@ -721,10 +749,10 @@ class Game {
   			
   			
   			if(CATS.includes(GRID[row][column])){
-  				var boxItem = _CAT_ITEM_IMG
+  				var boxItem = _CAT_ITEM_IMG(row,column)
   			}
 
-				html += this.displayBoxItem(boxItem)
+				html += this.displayBoxItem(boxItem,row,column)
   		}
 			html += "</div>"
   	}
