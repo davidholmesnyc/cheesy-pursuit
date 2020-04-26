@@ -399,6 +399,7 @@
 			this._settings = {
 				'MOUSE_WHEEL':0,
 				'ROTTEN_CHEESE':0,
+				'lives':_LIVES,
 			}
 			var settings = this.AllSettings();
 			
@@ -545,6 +546,7 @@ class Game {
   	
   	this.stopTimers()
   	this.removeCats()
+  	this.settings.set("lives",_LIVES)
   	
   	GRID[mouseLocation[0]][mouseLocation[1]] = EMPTY
   	GRID[_START_OF_MOUSE[0]][_START_OF_MOUSE[1]] = MOUSE
@@ -644,13 +646,16 @@ class Game {
  
 
   gameover(){
-  	_LIVES = _LIVES - 1 
-  	if(_LIVES < 0){
-  		$(".score").html("gameover")
 
+  	var lives = parseInt(this.settings.get("lives")) - 1 
+  	this.settings.set("lives",lives)
+  	if(lives < 0){
+  		$(".score").html("gameover")
+  		var self = this
   		this.playSound("lost")
   		setTimeout(function(){
   			alert("Game Over")
+  			self.settings.set("lives",_LIVES)
   			location.reload()
   		},500)
 
@@ -666,7 +671,7 @@ class Game {
   	setTimeout(function(){
   		alert("Oh no you got caught")
   	},200)
-  	$(".livescounter").html(_LIVES)
+  	$(".livescounter").html(lives)
   	//alert("gameover")
   	
   }
@@ -744,7 +749,7 @@ class Game {
 
 
   livesBox(){
-  	return `<div class='lives top'><img src='mouse.png'width="12"><span class="livescounter">${_LIVES}</span></div>`
+  	return `<div class='lives top'><img src='mouse.png'width="12"><span class="livescounter">${this.settings.get('lives')}</span></div>`
   }
   
   scoreBox(){
