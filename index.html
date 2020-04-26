@@ -331,6 +331,31 @@
 			return localStorage.removeItem('score');
 		}
 	}
+
+	class Level{
+		constructor(){
+			this._level = 1
+			this.localStorageName = 'level'
+
+			var level = this.currentLevel;
+			console.log(level)
+			if(!level){
+				localStorage.setItem(this.localStorageName, this._level);
+			}
+		}
+
+		get currentLevel(){
+			return parseInt(localStorage.getItem(this.localStorageName))
+		} 
+		set currentLevel(point) {
+				localStorage.setItem(this.localStorageName, this.currentLevel + point) ;
+		}
+		
+		reset(){
+			return localStorage.removeItem(this.localStorageName);
+		}
+	}
+
 	function simulateKeyPress (keyCode, type, modifiers) {
 		var evtName = (typeof(type) === "string") ? "key" + type : "keydown";	
 		var modifier = (typeof(modifiers) === "object") ? modifier : {};
@@ -414,6 +439,7 @@ class Game {
   	this.mouseFlipped = false
   	this.timer = []
   	this.score = new Score()
+  	this.level = new Level()
   	this.mouseIMG = ()=> {
 
   			if(this.mouseFlipped){
@@ -461,9 +487,12 @@ class Game {
   	console.log("CHEESE",this.getIndex(CHEESE))
   	if(!this.getIndex(CHEESE)){
   		this.stopGame()
+  		this.level.currentLevel = 1
   		this.playSound("win")
+
   		setTimeout(function(){
   			alert("Winner Winner Chicken Dinner!")
+  			
   			location.reload()
   		},200)
   		//location.reload()
@@ -536,6 +565,7 @@ class Game {
   		
   		this.stopGame()
   		this.score.reset()
+  		this.level.reset()
   		return
   	}
   	this.playSound("cat_caught_mouse")
@@ -624,9 +654,15 @@ class Game {
   scoreBox(){
   	return `<div class='score top'>${this.score.currentScore}</div>`
   }
+  
+  levelBox(){
+  	return `<div class='level top'>Level: ${this.level.currentLevel}</div>`
+  }
+
+
 	
 	buildBox(){
-		var html = `<div class="topContainer">${this.scoreBox()}${this.livesBox()}</div>`
+		var html = `<div class="topContainer">${this.scoreBox()}${this.livesBox()}${this.levelBox()}</div>`
 
 		html += "<div class='grid'>"
 
