@@ -7,6 +7,7 @@
 
 		body{
 					zoom: 200%;
+					touch-action: pan-y
 		}
 		.only_mobile{
 			display: none ;
@@ -294,7 +295,42 @@
 	//  };
 </script>
 <script>
+
+	// hack to stop double tap zoom 
 	document.body.addEventListener("click", event => {});
+
+
+	document.addEventListener("touchstart", event => {
+	    if(event.touches.length > 1) {
+	        console.log("zoom plz stahp");
+	        event.preventDefault();
+	        event.stopPropagation(); // maybe useless
+	    }
+	}, {passive: false});
+
+</script>
+<script>
+
+	class Score{
+		constructor(){
+			this._score = 0
+			var score = this.currentScore;
+			if(!score){
+				localStorage.setItem('score', this._score);
+			}
+		}
+
+		get currentScore(){
+			return parseInt(localStorage.getItem('score'))
+		} 
+		set currentScore(point) {
+				localStorage.setItem('score', this.currentScore + point) ;
+		}
+
+		reset(){
+			return localStorage.removeItem('score');
+		}
+	}
 	function simulateKeyPress (keyCode, type, modifiers) {
 		var evtName = (typeof(type) === "string") ? "key" + type : "keydown";	
 		var modifier = (typeof(modifiers) === "object") ? modifier : {};
@@ -377,6 +413,7 @@ class Game {
   	this.current_cat_direction = []
   	this.mouseFlipped = false
   	this.timer = []
+  	this.score = new Score()
   	this.mouseIMG = ()=> {
 
   			if(this.mouseFlipped){
@@ -388,7 +425,7 @@ class Game {
   	} 
   	this._started = 0
   	this.MAX_CATS = options.MAX_CATS  || 1
-  	this.score = options.score || 0
+  	// this.score = options.score || 0
   }
 
   start(){
@@ -498,6 +535,7 @@ class Game {
 
   		
   		this.stopGame()
+  		this.score.reset()
   		return
   	}
   	this.playSound("cat_caught_mouse")
@@ -530,22 +568,23 @@ class Game {
   		console.log("STOPP")
 
   }
-		getIndex(type){
-	  	var row = 0
-	  	var column = 0
-	  	var arr = []
-	  	for(let x in GRID){
-	  		row = x 
-	  		for(let b in GRID[x]){
-	  			if( GRID[x][b] === type){
-	  				column = b
-	  				// arr.push([parseInt(row),parseInt(column)])
-	  				return [parseInt(row),parseInt(column)]
-	  			} 
-	  		}
+	
+	getIndex(type){
+  	var row = 0
+  	var column = 0
+  	var arr = []
+  	for(let x in GRID){
+  		row = x 
+  		for(let b in GRID[x]){
+  			if( GRID[x][b] === type){
+  				column = b
+  				// arr.push([parseInt(row),parseInt(column)])
+  				return [parseInt(row),parseInt(column)]
+  			} 
+  		}
 
 
-	  	}
+  	}
 
 	  	// if (arr.length > 0){
 	  	// 	return arr
@@ -583,7 +622,7 @@ class Game {
   }
   
   scoreBox(){
-  	return `<div class='score top'>${this.score}</div>`
+  	return `<div class='score top'>${this.score.currentScore}</div>`
   }
 	
 	buildBox(){
@@ -666,8 +705,9 @@ class Game {
 
   addScore(nextPosition){
   	if(GRID[nextPosition[0]][nextPosition[1]] === CHEESE){
-  		this.score = this.score + 1 
-  		$("#score").html(this.score)
+  		// this.score = 
+  		this.score.currentScore = 1 
+  		$("#score").html(this.score.currentScore)
   	}
 
   }
