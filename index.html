@@ -420,13 +420,15 @@
 	function newGame(){
 		location.reload();
 	}
+	const _START_OF_MOUSE = [2,3]
 	var GRID = [
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
-		[CHEESE,CHEESE,CHEESE,MOUSE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[MOUSE_WHEEL,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 	]
+	GRID[_START_OF_MOUSE[0]][_START_OF_MOUSE[1]] = MOUSE
 	var GRID_OG = GRID
 	var CAT_STORE = [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE]
 	var CAT_STORE = []
@@ -462,6 +464,19 @@ class Game {
 
   	// this.startOnKeyPresss
 		this.bindKeys(this.startOnKeyPresss)
+  }
+
+  resetBoardAfterBeingCaught(){
+  	var mouseLocation = this.getIndex(MOUSE)
+  	
+  	this.stopTimers()
+  	this.removeCats()
+  	
+  	GRID[mouseLocation[0]][mouseLocation[1]] = EMPTY
+  	GRID[_START_OF_MOUSE[0]][_START_OF_MOUSE[1]] = MOUSE
+  	
+  	this.buildBox()
+  	this._started = 0 
   }
 
   startOnKeyPresss(self,e){
@@ -571,11 +586,12 @@ class Game {
   		this.level.reset()
   		return
   	}
+
   	this.playSound("cat_caught_mouse")
+  	this.resetBoardAfterBeingCaught()
   	setTimeout(function(){
   		alert("Oh no you got caught")
-  	}
-  		,200)
+  	},200)
   	$(".livescounter").html(_LIVES)
   	//alert("gameover")
   	
@@ -590,13 +606,16 @@ class Game {
   // 	}
   // }
 
-  stopGame(){
-  		clearInterval(this.timer)
-  		clearInterval(this.sendCatsTimer)
+  stopTimers(){
+  	clearInterval(this.timer)
+  	clearInterval(this.sendCatsTimer)
 
-  		for(var x in this.timer){
-  			clearInterval(this.timer[x])
-  		}
+  	for(var x in this.timer){
+  		clearInterval(this.timer[x])
+  	}
+  }
+  stopGame(){
+  		this.stopTimers()
   		document.onkeydown = false
   		console.log("STOPP")
 
@@ -891,6 +910,19 @@ class Game {
 	 			return true
 			}
 	 	}
+	}
+
+	removeCats(){
+
+		 	for(let cat in CATS){
+				var get_cat_location = this.getIndex(CATS[cat])
+		 		if(get_cat_location){
+		 			GRID[get_cat_location[0]][get_cat_location[1]] = CAT_STORE[CATS[cat]]
+		 			
+					
+		 			return true
+				}
+		 	}
 	}
 
 
