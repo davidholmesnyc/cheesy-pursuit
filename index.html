@@ -2,6 +2,8 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="manifest" href="manifest.json">
 	<title>Mouse Cat Game</title>
 	<style>
 
@@ -97,7 +99,7 @@
 			display:inline-block;
 			background-color:silver;;
 			padding:5px;
-			min-width:25%;
+			min-width: 10%;
 			text-align:center;
 			min-height:10px;
 			border-radius: 5px;
@@ -323,22 +325,22 @@
 
 <script type="text/javascript">
 
-	setTimeout(function(){
-		var el = document.querySelector('.cat-1-0');
+	// setTimeout(function(){
+	// 	var el = document.querySelector('.cat-0-0');
 
-		var arr = [el]
-		for (var i = 1; i <= 6; i++) {
-			arr.push(`.cat-1-${i}`)
-		}
-		anime({
-		  // targets: [el, '.mixed-array-demo .el-02', '.mixed-array-demo .el-03'],
-		  targets: arr,
-		  translateX: 250,
-		  easing: 'linear',
-		  duration: 3000
-		});
+	// 	var arr = [el]
+	// 	for (var i = 1; i <= 6; i++) {
+	// 		arr.push(`.cat-${i}-0`)
+	// 	}
+	// 	console.log("arr",arr)
+	// 	anime({
+	// 	  targets: arr,
+	// 	  translateY: 150,
+	// 	  easing: 'linear',
+	// 	  duration: 3000
+	// 	});
 
-	},1000)
+	// },1000)
 
 </script>
 <script>
@@ -387,6 +389,43 @@
 			return localStorage.removeItem(this.localStorageName);
 		}
 	}
+
+
+	class GameSettings{
+		
+		constructor(){
+			this._level = 1
+			this.localStorageName = 'settings'
+			this._settings = {
+				'MOUSE_WHEEL':0,
+				'ROTTEN_CHEESE':0,
+			}
+			var settings = this.AllSettings();
+			
+			if(!settings){
+				localStorage.setItem(this.localStorageName,JSON.stringify(this._settings));
+			}
+		}
+
+		AllSettings(){
+			return JSON.parse(localStorage.getItem(this.localStorageName))
+		} 
+
+		get(key){
+			return JSON.parse(localStorage.getItem(this.localStorageName))[key]
+		} 
+		set(key,value) {
+			var settings  = this.AllSettings()
+			settings[key] = value
+			localStorage.setItem(this.localStorageName, JSON.stringify(settings)) ;
+		}
+		
+		reset(){
+			return localStorage.setItem(this.localStorageName,JSON.stringify(this._settings));
+		}
+	}
+
+
 
 	function simulateKeyPress (keyCode, type, modifiers) {
 		var evtName = (typeof(type) === "string") ? "key" + type : "keydown";	
@@ -457,7 +496,7 @@
 	const _START_OF_MOUSE = [2,3]
 	var GRID = [
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-		[CATS[0],CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[MOUSE_WHEEL,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
@@ -477,6 +516,7 @@ class Game {
   	this.current_cat_direction = []
   	this.mouseFlipped = false
   	this.timer = []
+  	this.settings = new GameSettings()
   	this.score = new Score()
   	this.level = new Level()
   	this.mouseIMG = ()=> {
@@ -714,11 +754,26 @@ class Game {
   levelBox(){
   	return `<div class='level top'>Level: ${this.level.currentLevel}</div>`
   }
+  
+  rottenCheeseBox(){
+  	return `<div class='ROTTEN_CHEESE top'>${_ROTTEN_CHEESE_IMG} ${this.settings.get("ROTTEN_CHEESE")}</div>`
+  }  
+  mouseWheelBox(){
+  	return `<div class='MOUSE_WHEEL top'>${_MOUSE_WHEEL_IMG} ${this.settings.get("MOUSE_WHEEL")}</div>`
+  }
 
 
 	
 	buildBox(){
-		var html = `<div class="topContainer">${this.scoreBox()}${this.livesBox()}${this.levelBox()}</div>`
+		var html = `<div class="topContainer">
+		${this.scoreBox()}
+		${this.livesBox()}
+		
+		${this.rottenCheeseBox()}
+		${this.mouseWheelBox()}
+		${this.levelBox()}
+
+		</div>`
 
 		html += "<div class='grid'>"
 
@@ -804,11 +859,39 @@ class Game {
   };
 
   addScore(nextPosition){
-  	if(GRID[nextPosition[0]][nextPosition[1]] === CHEESE){
-  		// this.score = 
-  		this.score.currentScore = 1 
+
+  	if(GRID[nextPosition[0]][nextPosition[1]] === CHEESE ){
+  		this.score.currentScore = 1 * this.settings.get("MOUSE_WHEEL")
   		$("#score").html(this.score.currentScore)
+  		
   	}
+ 	
+  	if(GRID[nextPosition[0]][nextPosition[1]] === MOUSE_WHEEL ){
+  		
+  		var itemScore = parseInt(this.settings.get("MOUSE_WHEEL")) + 1 
+  		this.settings.set("MOUSE_WHEEL",itemScore)
+  		$(".MOUSE_WHEEL").html(itemScore)
+  		
+  		return this.playSound('woohoo-mouse')
+  		
+  	}
+ 	
+  	if(GRID[nextPosition[0]][nextPosition[1]] === ROTTEN_CHEESE ){
+  		
+  		var itemScore = parseInt(this.settings.get("ROTTEN_CHEESE")) + 1 
+  		this.settings.set("ROTTEN_CHEESE",itemScore)
+  		$(".ROTTEN_CHEESE").html(itemScore)
+  		
+  		return this.playSound('woohoo-mouse')
+  		
+  	}
+
+  	this.playSound("mouse_mov")
+  	return 
+
+
+
+  	
 
   }
   checkForCat(nextPosition){
@@ -864,14 +947,15 @@ class Game {
   		// if(GRID[newRow][newColumn] === CAT ){
   			return this.gameover()
 			}
-  		// add score if cheese
-  		this.addScore(nextPosition[direction])
+
 
   		
   		// you got the cheese so now empty  
   		GRID[row][column] = EMPTY	
   		this.youWon()
-  		this.playSound("mouse_mov")
+  		
+  		// add score if cheese
+  		this.addScore(nextPosition[direction])
 
   	}
 
@@ -940,7 +1024,17 @@ class Game {
 	 			GRID[cd[direction][0]][cd[direction][1]] = CATS[cat]
 
 	 			this.current_cat_direction[CATS[cat]] = direction
+
+
+
+
 	 			this.buildBox()
+
+	 			// var div = $(`.cat-${cd[direction][0]}-${cd[direction][1]}`);
+	 			// console.log("div",div)
+	 			// div.animate({direction: '100px'},this.speed);
+
+
 	 			this.autoCat(CATS[cat],direction)
 	 			return true
 			}
@@ -984,6 +1078,8 @@ class Game {
 		 	var timerFunction= function(){
 		 		game.move(cat,direction)
 		 	}
+
+
 
 		 	this.timer[cat] = setInterval(timerFunction,this.speed)
 
