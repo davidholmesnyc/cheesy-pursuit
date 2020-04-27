@@ -481,6 +481,8 @@
 	const EMPTY = 4
 	const ROTTEN_CHEESE = 8
 	const MOUSE_WHEEL = 9
+
+	const SPECIAL_CHEESE = [ROTTEN_CHEESE,MOUSE_WHEEL]
 	var CATS = [5,6,7]
 	var _LIVES = 3 
 	const _CHEESE_ITEM_IMG = "<img src='cheese.png' width='16' height='16'/>"
@@ -497,10 +499,10 @@
 	const _START_OF_MOUSE = [2,3]
 	var GRID = [
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,ROTTEN_CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
-		[MOUSE_WHEEL,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
+		[CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
 	]
 	GRID[_START_OF_MOUSE[0]][_START_OF_MOUSE[1]] = MOUSE
 	var GRID_OG = GRID
@@ -535,8 +537,9 @@ class Game {
   }
 
   start(){
+  	this.randomCheese()
+  	
   	this.buildBox()
-
   	// this.startOnKeyPresss
 		this.bindKeys(this.startOnKeyPresss)
   }
@@ -577,6 +580,34 @@ class Game {
   // get started() {
   //     return this._started
   // }
+
+
+  getPos(el) {
+      // yay readability
+      for (var lx=0, ly=0;
+           el != null;
+           lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+      return {x: lx,y: ly};
+  }
+
+  randomCheese(){
+  	var self = this
+		function randomFunc(){
+  		var random_row = self.random(4)
+  		var random_column = self.random(6)
+  		if(self.arraysMatch([_START_OF_MOUSE], [random_row,random_column])){
+  				return this.randomFunc()
+  		}
+  		return [random_row,random_column]
+  	}
+  	for(let cheese in SPECIAL_CHEESE){
+  				var r = randomFunc()
+  				console.log("R",r)
+  				GRID[r[0]][r[1]] = SPECIAL_CHEESE[cheese]
+  	}
+  }
+
+
   youWon(){
   	console.log("CHEESE",this.getIndex(CHEESE))
   	if(!this.getIndex(CHEESE) && !this.catStoreHasCheese() ){
