@@ -595,8 +595,10 @@ class Game {
 		function randomFunc(){
   		var random_row = self.random(4)
   		var random_column = self.random(6)
-  		if(self.arraysMatch([_START_OF_MOUSE], [random_row,random_column])){
-  				return this.randomFunc()
+
+  		if(self.arraysMatch(_START_OF_MOUSE, [random_row,random_column])){
+  				return  randomFunc()
+  				
   		}
   		return [random_row,random_column]
   	}
