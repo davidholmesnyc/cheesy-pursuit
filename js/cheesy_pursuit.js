@@ -429,7 +429,7 @@ scoreBox(){
 }
 
 levelBox(){
-	return `<div class='level top'>Level: ${this.settings.get("level")}</div>`
+	return `<div class='level top'>${this.settings.get("level")}</div>`
 }
 
 rottenCheeseBox(){
