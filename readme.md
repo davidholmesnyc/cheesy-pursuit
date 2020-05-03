@@ -1,6 +1,6 @@
 # Cheesy Pursuit 
 
-![](./imgs/DraggedImage.tiff)
+<img src="imgs/DraggedImage.tiff">
 This is a  html/js basic remake of 1995 game Cheesy Pursuit. [https://www.mobygames.com/game/cheesy-pursuit](https://www.mobygames.com/game/cheesy-pursuit)
 
 
