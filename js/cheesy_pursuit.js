@@ -25,12 +25,13 @@ const _CAT_ITEM_IMG = function(row,column){
 const _MOUSE_WHEEL_IMG = "<img src='imgs/MOUSE_WHEEL.png' width='16' height='16'/>"
 const _ROTTEN_CHEESE_IMG = "<img src='imgs/ROTTEN_CHEESE.png' width='16' height='16'/>"
 var _DIRECTIONS = ["down","up","left","right"]
+
 function newGame(){
   location.reload();
 }
 const _START_OF_MOUSE = [2,3]
 
-var 
+
 var GRID = [
   [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
   [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
