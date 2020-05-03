@@ -8,13 +8,13 @@
 	<style>
 
 		body{
-					zoom: 200%;
-					touch-action: pan-y
+			zoom: 200%;
+			touch-action: pan-y
 		}
 
 		html {
-		-ms-touch-action: manipulation;
-		touch-action: manipulation;
+			-ms-touch-action: manipulation;
+			touch-action: manipulation;
 		}
 
 
@@ -119,6 +119,7 @@
 		}
 		body{
 			background: antiquewhite;
+			background: #291f2b;
 			touch-action: manipulation;
 		}
 		/**
@@ -456,16 +457,16 @@
 		var initMethod = typeof kbEvent.initKeyboardEvent !== 'undefined' ? "initKeyboardEvent" : "initKeyEvent";
 
 		kbEvent[initMethod](
-		                   "keypress", // event type : keydown, keyup, keypress
-		                    true, // bubbles
-		                    true, // cancelable
-		                    window, // viewArg: should be window
-		                    false, // ctrlKeyArg
-		                    false, // altKeyArg
-		                    false, // shiftKeyArg
-		                    false, // metaKeyArg
-		                    38, // keyCodeArg : unsigned long the virtual key code , else 0
-		                    0 // charCodeArgs : unsigned long the Unicode character associated with the depressed key, else 0
+       "keypress", // event type : keydown, keyup, keypress
+        true, // bubbles
+        true, // cancelable
+        window, // viewArg: should be window
+        false, // ctrlKeyArg
+        false, // altKeyArg
+        false, // shiftKeyArg
+        false, // metaKeyArg
+        38, // keyCodeArg : unsigned long the virtual key code , else 0
+        0 // charCodeArgs : unsigned long the Unicode character associated with the depressed key, else 0
 		);
 		document.dispatchEvent(kbEvent);
 
@@ -564,8 +565,6 @@ class Game {
   		
   		self.sendCatsTimer = setInterval(function(){ 
   				var i = self.cats
-  				
-  			
   				self.startCat() 
 
   		},self.speed)
