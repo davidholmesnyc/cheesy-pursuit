@@ -317,13 +317,13 @@ gameover(){
 
 	var lives = parseInt(this.settings.get("lives")) - 1 
 	this.settings.set("lives",lives)
-	if(lives < 0){
+	if(lives <= 0){
 		$(".score").html("gameover")
 		var self = this
 		this.playSound("lost")
 		setTimeout(function(){
 			alert("Game Over")
-			self.settings.set("lives",_LIVES)
+      self.settings.reset("lives")
 			location.reload()
 		},500)
 
