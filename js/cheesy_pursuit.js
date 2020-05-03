@@ -4,8 +4,6 @@ const DEFAULT_MOUSE_WHEEL = 0
 const DEFAULT_ROTTEN_CHEESE = 0
 const DEFAULT_LIVES = 3
 const DEFAULT_LEVEL = 3
-
-var mouse = ""
 var SCORE = 0
 const UP_DOWN_AMOUNT = 8
 const LEFT_RIGHT_AMOUNT = 1
@@ -16,8 +14,8 @@ const CHEESE = 3
 const EMPTY = 4
 const ROTTEN_CHEESE = 8
 const MOUSE_WHEEL = 9
-
 const SPECIAL_CHEESE = [ROTTEN_CHEESE,MOUSE_WHEEL]
+
 var CATS = [5,6,7]
 const _CHEESE_ITEM_IMG = "<img src='imgs/cheese.png' width='16' height='16'/>"
 const _MOUSE_ITEM_IMG = "<img class='mouse' src='imgs/mouse.png'width='16' height='16'/>"
@@ -31,6 +29,8 @@ function newGame(){
   location.reload();
 }
 const _START_OF_MOUSE = [2,3]
+
+var 
 var GRID = [
   [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
   [CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE,CHEESE],
@@ -53,7 +53,8 @@ class GameSettings{
 			'ROTTEN_CHEESE':DEFAULT_ROTTEN_CHEESE,
 			'lives':DEFAULT_LIVES,
       'score':DEFAULT_SCORE,
-      'level':DEFAULT_LEVEL
+      'level':DEFAULT_LEVEL,
+      'grid':GRID
 		}
 		var settings = this.AllSettings();
 		
@@ -64,8 +65,9 @@ class GameSettings{
     }
     
 	}
-
-
+  newGame(){
+      location.reload()
+  }
   checkForNewSettings(){
     var settings  = this.AllSettings()
     var current_settings = Object.keys(settings)
@@ -287,10 +289,8 @@ bindKeys(callback){
 
 	    e = e || window.event;
 	   	if (callback) callback(self,e)
-
-	
-
-	    if (e.keyCode == '38') {
+      
+      if (e.keyCode == '38') {
 	     	game.move(MOUSE,"up")
 	    }
 	    else if (e.keyCode == '40') {
