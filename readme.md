@@ -1,7 +1,7 @@
 # Cheesy Pursuit 
 
 # How to play 
-Go to https://domorewithdavid.github.io/cheesy-pursuit
+Go to https://davidholmesnyc.github.io/cheesy-pursuit
 
 ## Original Game 
 This is a  html/js basic remake of 1995 game Cheesy Pursuit.
